@@ -26,6 +26,10 @@ def train_bpe_tinystories():
             max_word_len = len(w)
             max_len_word = w
     print("Max length word: {} with lengh {}".format(max_len_word, max_word_len))
+    with open(os.path.join("results", "tinystoires_train_vocab.pkl"), "wb") as f:
+        pickle.dump(vocab, f)
+    with open(os.path.join("results", "tinystories_train_merges.pkl"), "wb") as f:
+        pickle.dump(merges, f)
 
 def train_bpe_expts_owt():
     time_start = time.time()
@@ -52,7 +56,9 @@ def train_bpe_expts_owt():
     with open(os.path.join("results", "owt_train_merges.pkl"), "wb") as f:
         pickle.dump(merges, f)
 
+
+
 if __name__ == "__main__":
     main_pid = os.getpid()
     print(f"主进程PID：{main_pid}")
-    train_bpe_expts_owt()
+    train_bpe_tinystories()

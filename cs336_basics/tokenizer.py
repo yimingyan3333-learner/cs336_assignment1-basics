@@ -5,6 +5,9 @@ from math import inf
 import pickle
 import regex as re
 import ipdb
+import numpy as np
+import os
+from tqdm import tqdm
 
 PRETOKENIZER_PATTERN = r"""'(?:[sdmt]|ll|ve|re)| ?\p{L}+| ?\p{N}+| ?[^\s\p{L}\p{N}]+|\s+(?!\S)|\s+"""
 
@@ -116,3 +119,16 @@ class BPETokenizer:
             output_bytes += self.vocab[id]
         output = output_bytes.decode('utf-8', errors='replace')
         return output
+
+def encode_file_to_bin(tokenizer, text_path, out_bin_path, dtype=np.uint16):
+    total_bytes = os.path.getsize(text_path)
+
+    with open(text_path, encoding="utf-8") as f_in, open(out_bin_path, "wb") as f_out:
+        p_bar = tqdm(total=total_bytes, desc="Encoding to binary", unit="B", unit_scale=True)
+
+        for line in f_in:
+            token_ids = tokenizer.encode(line)
+            arr = np.array(token_ids, dtype=dtype)
+            arr.tofile(f_out)
+
+            p_bar.update(len(line.encode("utf-8")))
